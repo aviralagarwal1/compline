@@ -54,7 +54,7 @@
         </section>
       </main>
     </div>
-    <footer class="site-foot"><span>Compline</span><span>Built by Aviral Agarwal &middot; &copy; {{ current_year }}</span></footer>
+    {% include "partials/footer.html" %}
   </div>
   <script src="{{ url_for('static', filename='js/site_nav.js') }}"></script>
 </body>

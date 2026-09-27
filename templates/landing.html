@@ -227,7 +227,7 @@
       </main>
     </div>
 
-    <footer class="site-foot"><span>Compline</span><span>Built by Aviral Agarwal · © {{ current_year }}</span></footer>
+    {% include "partials/footer.html" %}
   </div>
   <script src="{{ url_for('static', filename='js/site_nav.js') }}"></script>
   <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
