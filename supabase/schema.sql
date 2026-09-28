@@ -1,8 +1,8 @@
 -- Compline database schema. Run once in the Supabase SQL editor.
 --
 -- The Flask server talks to these tables with the service-role key, which
--- bypasses row-level security. RLS is enabled with no policies so the public
--- (anon) key can never read or write them directly.
+-- bypasses row-level security. RLS is enabled and the app needs no policies,
+-- so the public (anon) key can never read or write them directly.
 
 create extension if not exists pgcrypto;
 
@@ -13,15 +13,14 @@ create table if not exists public.transactions (
   vendor      text not null,
   card        text,
   date        date,
-  amount      numeric(12, 2) not null,
-  status      text not null default 'settled',   -- 'settled' or 'pending'
-  memo        text,
+  amount      numeric,
+  status      text,                              -- 'settled' or 'pending'
+  created_at  timestamptz default now(),
   batch_id    uuid,
-  created_at  timestamptz not null default now()
+  memo        text
 );
 
-create index if not exists transactions_user_date_idx on public.transactions (user_id, date desc);
-create index if not exists transactions_user_batch_idx on public.transactions (user_id, batch_id);
+create index if not exists idx_transactions_user_batch on public.transactions (user_id, batch_id);
 
 -- One row per user. The column name is historical: it holds a JSON settings
 -- blob (profile, saved cards, and daily screenshot usage), never an API key.
