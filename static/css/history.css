@@ -14,10 +14,12 @@
 .export-btn { min-height:40px; padding:var(--s-2) var(--s-4); }
 .export-btn svg { width:14px; height:14px; color:var(--muted); transition:transform var(--dur) var(--ease); }
 .export.is-open .export-btn svg { transform:rotate(180deg); }
-.export-panel { display:none; position:absolute; z-index:30; right:0; top:calc(100% + var(--s-2)); min-width:220px; padding:var(--s-1); border-radius:var(--r-lg); background:var(--surface); box-shadow:var(--shadow-lift); }
+.export-panel { display:none; position:absolute; z-index:30; right:0; top:calc(100% + var(--s-2)); min-width:200px; padding:var(--s-1); border-radius:var(--r-lg); background:var(--surface); box-shadow:var(--shadow-lift); }
 .export.is-open .export-panel { display:grid; }
-.export-item { display:grid; gap:1px; padding:var(--s-2) var(--s-3); border:0; border-radius:var(--r-md); background:transparent; color:var(--ink); font-size:var(--t-sm); font-weight:600; text-align:left; cursor:pointer; }
-.export-item span { font-size:var(--t-xs); font-weight:400; color:var(--muted); }
+/* Format on the left, what you get on the right: one parallel line per export. */
+.export-item { display:flex; align-items:center; justify-content:space-between; gap:var(--s-5); width:100%; min-height:40px; padding:var(--s-2) var(--s-3); border:0; border-radius:var(--r-md); background:transparent; color:var(--ink); font-size:var(--t-sm); text-align:left; cursor:pointer; }
+.export-item b { font-weight:600; }
+.export-item span { color:var(--muted); }
 .export-item:hover { background:var(--surface-soft); }
 
 /* ── Charges ────────────────────────────────────────────────────────────── */
