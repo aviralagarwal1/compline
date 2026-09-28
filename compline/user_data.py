@@ -18,24 +18,20 @@ from .settings_blob import (
 )
 
 
-# The settings blob is moving from the misnamed `anthropic_api_key` column to
-# `settings`. During the move, reads prefer `settings` and fall back to the old
-# column, and writes go to both, so nothing written mid-migration is lost.
+# One JSON blob per user: profile, saved cards, and daily screenshot usage.
 SETTINGS_COLUMN = "settings"
-LEGACY_SETTINGS_COLUMN = "anthropic_api_key"
 
 
 def get_user_settings_state_for_user(client, user_id: str):
     result = (
         client.table("user_settings")
-        .select(f"{SETTINGS_COLUMN},{LEGACY_SETTINGS_COLUMN}")
+        .select(SETTINGS_COLUMN)
         .eq("user_id", user_id)
         .limit(1)
         .execute()
     )
     if result.data:
-        row = result.data[0]
-        return parse_user_settings_blob(row.get(SETTINGS_COLUMN) or row.get(LEGACY_SETTINGS_COLUMN))
+        return parse_user_settings_blob(result.data[0].get(SETTINGS_COLUMN))
     return build_empty_user_settings()
 
 
@@ -44,7 +40,6 @@ def save_user_settings_state_for_user(client, user_id: str, settings: dict):
     client.table("user_settings").upsert({
         "user_id": user_id,
         SETTINGS_COLUMN: serialized,
-        LEGACY_SETTINGS_COLUMN: serialized,
     }).execute()
     return parse_user_settings_blob(serialized)
 

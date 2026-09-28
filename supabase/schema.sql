@@ -22,11 +22,11 @@ create table if not exists public.transactions (
 
 create index if not exists idx_transactions_user_batch on public.transactions (user_id, batch_id);
 
--- One row per user. The column name is historical: it holds a JSON settings
--- blob (profile, saved cards, and daily screenshot usage), never an API key.
+-- One row per user: a JSON settings blob with profile, saved cards, and daily
+-- screenshot usage.
 create table if not exists public.user_settings (
-  user_id            uuid primary key references auth.users (id) on delete cascade,
-  anthropic_api_key  text
+  user_id   uuid primary key references auth.users (id) on delete cascade,
+  settings  text
 );
 
 alter table public.transactions enable row level security;

@@ -36,24 +36,20 @@ class FakeClient:
         return self.table_
 
 
-def blob(first_name):
-    return json.dumps({"profile": {"first_name": first_name}, "cards": [], "hosted_usage": {}})
+class SettingsColumnTests(TestCase):
+    def test_reads_the_settings_column(self):
+        stored = json.dumps({"profile": {"first_name": "Aviral"}, "cards": [], "hosted_usage": {}})
+        client = FakeClient([{"settings": stored}])
+        self.assertEqual(get_user_settings_state_for_user(client, "user-1")["profile"]["first_name"], "Aviral")
+        self.assertEqual(client.table_.selected, "settings")
 
+    def test_missing_row_gives_empty_settings(self):
+        settings = get_user_settings_state_for_user(FakeClient([]), "user-1")
+        self.assertEqual(settings["cards"], [])
 
-class SettingsColumnMigrationTests(TestCase):
-    def test_reads_the_new_column_first(self):
-        client = FakeClient([{"settings": blob("New"), "anthropic_api_key": blob("Old")}])
-        self.assertEqual(get_user_settings_state_for_user(client, "user-1")["profile"]["first_name"], "New")
-        self.assertEqual(client.table_.selected, "settings,anthropic_api_key")
-
-    def test_falls_back_to_the_old_column_until_copied(self):
-        client = FakeClient([{"settings": None, "anthropic_api_key": blob("Old")}])
-        self.assertEqual(get_user_settings_state_for_user(client, "user-1")["profile"]["first_name"], "Old")
-
-    def test_writes_both_columns(self):
+    def test_writes_only_the_settings_column(self):
         client = FakeClient()
         save_user_settings_state_for_user(client, "user-1", {"profile": {"first_name": "Aviral"}, "cards": []})
         row = client.table_.upserted
-        self.assertEqual(row["user_id"], "user-1")
-        self.assertEqual(row["settings"], row["anthropic_api_key"])
+        self.assertEqual(set(row), {"user_id", "settings"})
         self.assertEqual(json.loads(row["settings"])["profile"]["first_name"], "Aviral")
