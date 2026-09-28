@@ -328,6 +328,7 @@ async function checkApiKeyAndEnter() {
     syncHostedQuotaState(data);
     syncSavedCards(data.cards || []);
     profileFirstName = (data.profile && data.profile.first_name) || getFirstNameFromToken(sessionToken);
+    if (window.setAccountIdentity && data.profile) window.setAccountIdentity(data.profile.first_name, data.profile.last_name);
     isNewAccount = Boolean(data.is_new_user) && !hasSeenWelcomeLocally();
     await flashLoginSuccessIfNeeded();
     showMainApp();

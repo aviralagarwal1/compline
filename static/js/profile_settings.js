@@ -19,6 +19,7 @@
       const data = await res.json();
       document.getElementById("firstNameInput").value = data.profile?.first_name || "";
       document.getElementById("lastNameInput").value = data.profile?.last_name || "";
+      if (window.setAccountIdentity && data.profile) window.setAccountIdentity(data.profile.first_name, data.profile.last_name);
       savedCards = data.cards || [];
       renderSavedCards();
     } catch (e) {
@@ -77,6 +78,7 @@
       }
       document.getElementById("firstNameInput").value = data.profile?.first_name || firstName;
       document.getElementById("lastNameInput").value = data.profile?.last_name || lastName;
+      if (window.setAccountIdentity) window.setAccountIdentity(data.profile?.first_name || firstName, data.profile?.last_name || lastName);
       showProfileStatus("Saved", true);
     } catch (e) {
       showProfileStatus("Network error - please try again.", false);

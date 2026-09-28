@@ -93,6 +93,7 @@ html.is-signed-in .nav-signed-in { display:flex; }
 .account-btn { display:inline-flex; align-items:center; gap:var(--s-2); min-height:36px; padding:var(--s-1) var(--s-2) var(--s-1) var(--s-1); border:1px solid var(--line); border-radius:999px; background:var(--surface); color:var(--ink); font-size:var(--t-sm); font-weight:600; transition:border-color var(--dur) var(--ease),background var(--dur) var(--ease); }
 .account-btn:hover,.account.is-open .account-btn { border-color:var(--line-strong); background:var(--surface-soft); }
 .account-avatar { display:grid; place-items:center; width:26px; height:26px; border-radius:50%; background:var(--accent); color:var(--on-accent); font-size:var(--t-2xs); font-weight:650; line-height:1; }
+.account-name { max-width:14ch; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
 .account-chevron { width:14px; height:14px; color:var(--muted); transition:transform var(--dur) var(--ease); }
 .account.is-open .account-chevron { transform:rotate(180deg); }
 .account-panel { display:none; position:absolute; z-index:30; right:0; top:calc(100% + var(--s-2)); min-width:200px; padding:var(--s-1); border:1px solid var(--line); border-radius:var(--r-md); background:var(--surface); box-shadow:var(--shadow); }

@@ -101,3 +101,70 @@
   }, { threshold: 0.15, rootMargin: "0px 0px -8% 0px" });
   targets.forEach(function (el) { observer.observe(el); });
 })();
+
+/* Account button: the signed-in person's initials and first name instead of a
+   generic "Account". The saved Profile name wins (pages that load it call
+   setAccountIdentity, and it is kept for the session); otherwise the name
+   Google gave at sign-in. With no name it stays "Account" with the icon. */
+(function () {
+  var btn = document.querySelector(".account-btn");
+  if (!btn) return;
+  var nameEl = btn.querySelector(".account-name");
+  var avatar = btn.querySelector(".account-avatar");
+  var icon = avatar.innerHTML;
+
+  function tokenName() {
+    try {
+      var part = (sessionStorage.getItem("compline_token") || "").split(".")[1];
+      if (!part) return null;
+      part = part.replace(/-/g, "+").replace(/_/g, "/");
+      while (part.length % 4) part += "=";
+      var bytes = Uint8Array.from(atob(part), function (c) { return c.charCodeAt(0); });
+      var meta = JSON.parse(new TextDecoder().decode(bytes)).user_metadata || {};
+      var first = (meta.first_name || meta.given_name || "").trim();
+      var last = (meta.last_name || meta.family_name || "").trim();
+      var full = (meta.full_name || meta.name || meta.display_name || "").trim();
+      if (!first && full) {
+        var parts = full.split(/\s+/);
+        first = parts[0];
+        if (!last && parts.length > 1) last = parts[parts.length - 1];
+      }
+      return { first: first, last: last };
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function savedName() {
+    try { return JSON.parse(sessionStorage.getItem("compline_name") || "null"); } catch (err) { return null; }
+  }
+
+  function initial(text) {
+    var first = Array.from((text || "").trim())[0];
+    return first ? first.toLocaleUpperCase() : "";
+  }
+
+  function render(name) {
+    var first = name && (name.first || "").trim();
+    if (!first) {
+      nameEl.textContent = "Account";
+      avatar.innerHTML = icon;
+      btn.removeAttribute("title");
+      return;
+    }
+    nameEl.textContent = first;
+    avatar.textContent = initial(first) + initial(name.last);
+    btn.title = [first, (name.last || "").trim()].filter(Boolean).join(" ");
+  }
+
+  window.setAccountIdentity = function (first, last) {
+    var name = { first: (first || "").trim(), last: (last || "").trim() };
+    try {
+      if (name.first) sessionStorage.setItem("compline_name", JSON.stringify(name));
+      else sessionStorage.removeItem("compline_name");
+    } catch (err) {}
+    render(name.first ? name : tokenName());
+  };
+
+  render(savedName() || tokenName());
+})();
